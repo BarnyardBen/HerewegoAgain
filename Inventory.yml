@@ -1,0 +1,45 @@
+all:
+  children:
+    exos_switches:
+      hosts:
+        10.10.1.30:
+        10.10.1.31:
+        10.10.1.32:
+        10.10.1.22:
+      vars:
+        ansible_connection: local
+        ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
+    windows_desktops:
+      hosts:
+        10.10.1.35:
+          desktop_user: DesktopUser1
+        10.10.1.36:
+          desktop_user: DesktopUser2
+        10.10.1.43:
+          desktop_user: DesktopUser3
+        10.10.1.29:
+          desktop_user: DesktopUser4
+      vars:
+        ansible_user: Administrator
+        ansible_password: P@ssw0rd
+        ansible_connection: winrm
+        ansible_winrm_transport: ntlm
+        ansible_winrm_server_cert_validation: ignore
+        ansible_port: 5985
+
+    linux_testboxes:
+      hosts:
+        10.10.1.56:
+          test_user: TestUser1
+        10.10.1.57:
+          test_user: TestUser2
+      vars:
+        ansible_user: student
+        ansible_password: P@ssw0rd
+        ansible_become_password: P@ssw0rd
+        ansible_connection: ssh
+        ansible_become: yes
+        ansible_become_method: sudo
+
+

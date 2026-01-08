@@ -1,0 +1,42 @@
+---
+- name: Deploy Local-Admin account on EXOS switches
+  hosts: exos_switches
+  gather_facts: false
+  vars:
+    switch_user: admin
+  tasks:
+    - name: Create Local-Admin account with R/W privileges
+      raw: ssh {{ switch_user }}@{{ inventory_hostname }} "create account admin Local-Admin WGU123"
+      ignore_errors: yes
+
+    - name: Save configuration
+      raw: ssh {{ switch_user }}@{{ inventory_hostname }} "save configuration primary"
+
+- name: Deploy DesktopUser on Windows Desktops
+  hosts: windows_desktops
+  gather_facts: false
+  vars:
+    password: WGU123
+  tasks:
+    - name: Create local admin user {{ desktop_user }}
+      win_user:
+        name: "{{ desktop_user }}"
+        password: "{{ password }}"
+        state: present
+        groups: Administrators
+        password_never_expires: yes
+        update_password: always
+
+- name: Deploy TestUser on Linux Test Boxes
+  hosts: linux_testboxes
+  gather_facts: false
+  tasks:
+    - name: Create local admin user {{ test_user }}
+      user:
+        name: "{{ test_user }}"
+        password: "{{ 'WGU123' | password_hash('sha512') }}"
+        state: present
+        groups: sudo
+        append: yes
+        shell: /bin/bash
+
